@@ -1,0 +1,68 @@
+
+#toolbox > expander {
+  border-top: 1px solid @unfocused_borders;
+  margin-top: 6px;
+  padding: 6px 3px 0px 3px;
+}
+
+#toolbox > expander:first-child {
+  border-top: none;
+  margin-top: 0px;
+}
+
+#diagrams {
+  border-top-width: 0px;
+}
+
+diagramview {
+  background: white;
+}
+
+.status-window box {
+  padding: 12px;
+}
+
+.dropdown-small {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+flowboxchild {
+  padding: 8px;
+  border-radius: 8px;
+}
+
+flowboxchild:hover {
+  background-color: @theme_selected_bg_color;
+}
+
+flowboxchild:hover * {
+  color: @theme_selected_fg_color;
+}
+
+.greeter list row {
+  border-bottom: 1px solid alpha(@borders, 0.2);
+  transition-property: background, opacity;
+}
+
+.greeter list row:last-child {
+  border-bottom: none;
+}
+
+.greeter frame border {
+  border-color: alpha(@borders, 0.6);
+}
+
+.greeter flowboxchild {
+  border-radius: 12px;
+  outline-offset: -3px;
+}
+
+.info {
+  border-radius: 4px;
+  font-size: small;
+}
+.info:hover {
+  color: @theme_selected_fg_color;
+  background-color: @theme_selected_bg_color;
+}

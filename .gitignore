@@ -1,0 +1,49 @@
+build
+dist
+gaphor/locale/*/LC_MESSAGES
+html
+*.pyc
+*.pyo
+*.swp
+*.egg
+*~
+\#*\#
+.eggs/
+gaphor.egg-info/
+gaphor.prof
+.gpg
+pip-wheel-metadata
+_packaging/gaphor-script.py
+
+# Gaphor test models in project root
+/*.gaphor
+
+# (Virtual) env stuff
+.env/
+.idea
+.venv/
+.vscode/
+.python-version
+
+# PyTest
+.pytest_cache
+.hypothesis
+
+# MyPy
+.mypy_cache/
+
+# Coverage
+.coverage
+htmlcov
+
+# Windows Install
+_packaging/windows/gaphor-script.py
+_packaging/windows/_build_root
+_packaging/windows/file_version_info.txt
+_packaging/windows/output
+
+# MacOS
+package/gaphor.iconset/
+
+# Vagrant
+.vagrant

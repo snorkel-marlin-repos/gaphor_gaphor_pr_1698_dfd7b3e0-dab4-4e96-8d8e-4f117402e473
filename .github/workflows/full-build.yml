@@ -1,0 +1,379 @@
+name: Full Build
+
+on:
+  push:
+  release:
+    types: [published, prereleased]
+env:
+  python_version: '3.10'
+  mainline_build: ${{ github.ref == 'refs/heads/main' || github.event.label.name == 'translation' }}
+
+jobs:
+  skip-check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v4.0.0
+        with:
+          concurrent_skipping: 'same_content'
+          do_not_skip: '["release", "workflow_dispatch", "schedule"]'
+
+  lint:
+    needs: skip-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    steps:
+      - uses: actions/checkout@v3.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Python
+        uses: actions/setup-python@v4.2.0
+        with:
+          python-version: ${{ env.python_version }}
+      - name: Lint with Pre-commit
+        uses: pre-commit/action@v3.0.0
+      - name: Check translations
+        run: pip install babel && python po/check-babel.py
+
+  linux:
+    needs: lint
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    steps:
+      - uses: actions/checkout@v3.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install Linux Dependencies
+        uses: ./.github/actions/linux_dependencies
+      - name: Set up Python
+        uses: actions/setup-python@v4.2.0
+        with:
+          python-version: ${{ env.python_version }}
+      - name: Use Python Dependency Cache
+        uses: actions/cache@v3.0.8
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-22.04
+      - name: Install Dependencies and Test
+        id: setup_and_test
+        uses: ./.github/actions/setup_and_test
+        with:
+          xvfb_command: 'xvfb-run'
+      - name: Upload Code Coverage to Code Climate
+        uses: paambaati/codeclimate-action@v3.0.0
+        env:
+          CC_TEST_REPORTER_ID: 05f6288b94a87daa172d3e96a33ec331a4374be7d01eb9a42b3b21c4c550a8ff
+        with:
+          coverageCommand: poetry run coverage xml
+      - name: Create Source Dist and Wheel
+        run: poetry build
+      - name: Upload gaphor-${{ steps.setup_and_test.outputs.version }}.tar.gz
+        uses: actions/upload-artifact@v3
+        with:
+          name: gaphor-${{ steps.setup_and_test.outputs.version }}.tar.gz
+          path: dist/gaphor-${{ steps.setup_and_test.outputs.version }}.tar.gz
+      - name: Upload gaphor-${{ steps.setup_and_test.outputs.version }}-py3-none-any.whl
+        uses: actions/upload-artifact@v3
+        with:
+          name: gaphor-${{ steps.setup_and_test.outputs.version }}-py3-none-any.whl
+          path: dist/gaphor-${{ steps.setup_and_test.outputs.version }}-py3-none-any.whl
+      - name: Upload Assets (release only)
+        uses: AButler/upload-release-assets@v2.0
+        if: github.event_name == 'release'
+        with:
+          files: "dist/*"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to PyPI (release only)
+        if: github.event_name == 'release'
+        run: poetry publish -u __token__ -p ${{ secrets.PYPI_TOKEN }}
+
+  linux-appimage:
+    needs: lint
+    runs-on: ubuntu-20.04
+    env:
+      GAPHOR_USE_GTK: 3
+    permissions:
+      contents: write
+    container:
+      image: ghcr.io/gaphor/gaphor-appimage:stable
+    timeout-minutes: 30
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    outputs:
+      appimage: Gaphor-${{ steps.setup_and_test.outputs.version }}-x86_64.AppImage
+    steps:
+      - uses: actions/checkout@v3.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Use Python Dependency Cache
+        uses: actions/cache@v3.0.8
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-container
+      - name: Install Dependencies and Test
+        id: setup_and_test
+        uses: ./.github/actions/setup_and_test
+        with:
+          xvfb_command: 'xvfb-run'
+      - name: Create Linux Appimage
+        uses: ./.github/actions/linux_appimage
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        with:
+          mainline_build: ${{ env.mainline_build }}
+          version: ${{ steps.setup_and_test.outputs.version }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  check-linux-appimage:
+    needs: linux-appimage
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.linux-appimage.outputs.appimage }}
+          path: .
+      - name: Perform self-test
+        run: |
+          chmod +x ${{ needs.linux-appimage.outputs.appimage }}
+          xvfb-run ./${{ needs.linux-appimage.outputs.appimage }} --self-test
+
+  linux-gtk3:
+    needs: lint
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    env:
+      GAPHOR_USE_GTK: 3
+    steps:
+      - run: >
+          sudo apt-get update -qq && sudo apt-get install -qq --no-install-recommends
+          gir1.2-gtk-3.0 libgirepository1.0-dev libgtksourceview-4-dev upx
+      - uses: actions/checkout@v3.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v4.2.0
+        with:
+          python-version: ${{ env.python_version }}
+      - name: Use Python Dependency Cache
+        uses: actions/cache@v3.0.8
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-20.04
+      - name: Install Dependencies and Test
+        id: setup_and_test
+        uses: ./.github/actions/setup_and_test
+        with:
+          xvfb_command: 'xvfb-run'
+
+  macos:
+    needs: lint
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    timeout-minutes: 45
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    outputs:
+      artifact: ${{ steps.create.outputs.artifact }}
+    env:
+      LDFLAGS: -L/usr/local/opt/python@3.10/lib
+      PKG_CONFIG_PATH: /usr/local/opt/libffi/lib/pkgconfig:/usr/local/opt/python@3.10/lib/pkgconfig:${PKG_CONFIG_PATH:-}
+      GAPHOR_USE_GTK: 3
+    steps:
+      - uses: actions/checkout@v3.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install macOS Dependencies
+        uses: ./.github/actions/macos_dependencies
+      - name: Set up Python
+        uses: actions/setup-python@v4.2.0
+        with:
+          python-version: ${{ env.python_version }}
+      - name: Use Python Dependency Cache
+        uses: actions/cache@v3.0.8
+        with:
+          path: ~/Library/Caches/pip
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
+      - name: Install Dependencies and Test
+        id: setup_and_test
+        uses: ./.github/actions/setup_and_test
+      - name: Create macOS Application
+        id: create
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        uses: ./.github/actions/macos_dmg
+        with:
+          mainline_build: ${{ env.mainline_build }}
+          version: ${{ steps.setup_and_test.outputs.version }}
+          base64_encoded_p12: ${{ secrets.BASE64_ENCODED_P12 }}
+          certpassword_p12: ${{ secrets.CERTPASSWORD_P12 }}
+          ac_username:  ${{ secrets.AC_USERNAME }}
+          ac_password: ${{ secrets.AC_PASSWORD }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  check-macos-app:
+    needs: macos
+    runs-on: macos-latest
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@v3
+        id: download
+        with:
+          name: ${{ needs.macos.outputs.artifact }}
+          path: .
+      - name: Perform self-test (dmg)
+        if: "endsWith(needs.macos.outputs.artifact, '.dmg')"
+        run: |
+          hdiutil attach ${{ needs.macos.outputs.artifact }}
+          cd /Volumes/Gaphor*
+          Gaphor.app/Contents/MacOS/gaphor-exe --self-test
+      - name: Perform self-test (zip)
+        if: "endsWith(needs.macos.outputs.artifact, '.zip')"
+        run: |
+          unzip ${{ needs.macos.outputs.artifact }}
+          Gaphor.app/Contents/MacOS/gaphor-exe --self-test
+
+  macos-gtk4:
+    needs: lint
+    runs-on: macos-latest
+    timeout-minutes: 30
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    env:
+      LDFLAGS: -L/usr/local/opt/python@3.10/lib
+      PKG_CONFIG_PATH: /usr/local/opt/libffi/lib/pkgconfig:/usr/local/opt/python@3.10/lib/pkgconfig:${PKG_CONFIG_PATH:-}
+    steps:
+      - uses: actions/checkout@v3.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Python
+        uses: actions/setup-python@v4.2.0
+        with:
+          python-version: ${{ env.python_version }}
+      - name: Install macOS Dependencies
+        uses: ./.github/actions/macos_dependencies
+      - name: Use Python Dependency Cache
+        uses: actions/cache@v3.0.8
+        with:
+          path: ~/Library/Caches/pip
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
+      - name: Install Dependencies and Test
+        uses: ./.github/actions/setup_and_test
+
+  windows-build-gtk:
+    needs: skip-check
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      gvsbuild_version: 2022.2.0
+      # Bump this number if you want to force a rebuild of gvsbuild with the same revision
+      gvsbuild_update: 1
+    outputs:
+      cachekey: ${{ steps.output.outputs.cachekey }}
+    steps:
+      - name: GTK binaries create dir
+        run: mkdir C:\gtk-build\gtk\x64\release
+      - name: GTK binaries get from cache
+        uses: actions/cache@v3.0.8
+        id: cache
+        with:
+          path: C:\gtk-build\gtk\x64\release\**
+          key: gvsbuild-${{ env.gvsbuild_update }}-${{ env.gvsbuild_version }}
+      - name: Set up Python
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/setup-python@v4.2.0
+        with:
+          python-version: ${{ env.python_version }}
+      - name: GTK binaries move git binary
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: move "C:\Program Files\Git\usr\bin" "C:\Program Files\Git\usr\notbin"
+      - name: Install gvsbuild
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: python -m pip install gvsbuild==${{ env.gvsbuild_version }}
+      - name: GTK binaries run gvsbuild
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: >
+          gvsbuild build --enable-gi --py-wheel gobject-introspection gtk3 pycairo pygobject gtksourceview4
+          adwaita-icon-theme hicolor-icon-theme
+      - name: Copy wheels to cached directory
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: Get-ChildItem C:\gtk-build\build\x64\release\*\dist\*.whl | ForEach-Object -process { cp $_ C:\gtk-build\gtk\x64\release\ }
+      - name: GTK binaries restore git binary
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: move "C:\Program Files\Git\usr\notbin" "C:\Program Files\Git\usr\bin"
+      - name: GTK binaries output cache key
+        id: output
+        run: echo "::set-output name=cachekey::gvsbuild-${{ env.gvsbuild_update }}-${{ env.gvsbuild_version }}"
+
+  windows:
+    needs: [lint, windows-build-gtk]
+    runs-on: windows-latest
+    env:
+      GAPHOR_USE_GTK: 3
+    permissions:
+      contents: write
+    timeout-minutes: 45
+    outputs:
+      installer: gaphor-${{ steps.setup_and_test.outputs.version }}-installer.exe
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    steps:
+      - name: Create GTK binaries dir
+        run: mkdir C:\gtk-build\gtk\x64\release
+      - name: Get GTK binaries from cache
+        uses: actions/cache@v3.0.8
+        id: cache
+        with:
+          path: C:\gtk-build\gtk\x64\release\**
+          key: ${{ needs.windows-build-gtk.outputs.cachekey }}
+      - name: Set up env
+        run: |
+          echo "PKG_CONFIG=C:\gtk-build\gtk\x64\release\bin\pkgconf.exe" >> $GITHUB_ENV
+          echo "C:\gtk-build\gtk\x64\release\bin" >> $GITHUB_PATH
+        shell: bash
+      - uses: actions/checkout@v3.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Python
+        uses: actions/setup-python@v4.2.0
+        with:
+          python-version: ${{ env.python_version }}
+      - name: Use Python Dependency Cache
+        uses: actions/cache@v3.0.8
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
+      - name: Install Dependencies and Test
+        id: setup_and_test
+        uses: ./.github/actions/setup_and_test
+        with:
+          install_others: Get-ChildItem C:\gtk-build\gtk\x64\release\*.whl | ForEach-Object -process { poetry run pip install $_ }
+      - name: Create Windows Executables
+        uses: ./.github/actions/windows_executables
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        with:
+          mainline_build: ${{ env.mainline_build }}
+          version: ${{ steps.setup_and_test.outputs.version }}
+          cert_password: ${{ secrets.CERTPASSWORD }}
+          base64_encoded_pfx: ${{ secrets.BASE64_ENCODED_PFX }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  check-windows-installer:
+    needs: windows
+    runs-on: windows-latest
+    timeout-minutes: 10
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.windows.outputs.installer }}
+          path: .
+      - name: Perform self-test
+        run: |
+          start "" /WAIT "${{ needs.windows.outputs.installer }}" /S
+          start "" /WAIT "C:\Program Files\Gaphor\gaphor-exe.exe" --self-test
+        shell: cmd

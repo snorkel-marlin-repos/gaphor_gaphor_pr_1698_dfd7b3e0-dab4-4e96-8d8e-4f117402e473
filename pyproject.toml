@@ -1,0 +1,210 @@
+[tool.poetry]
+name = "gaphor"
+version = "2.11.0"
+description = "Gaphor is the simple modeling tool written in Python."
+authors = [
+    "Arjan J. Molenaar <gaphor@gmail.com>",
+    "Dan Yeaw <dan@yeaw.me>"
+]
+
+readme = "README.md"
+
+homepage = "https://gaphor.org/"
+repository = "https://github.com/gaphor/gaphor"
+documentation = "https://gaphor.readthedocs.io/"
+
+keywords = ["gtk+", "diagram", "UML", "MBSE", "gaphor", "modeling"]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: GTK",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Programming Language :: Python",
+    "Topic :: Multimedia :: Graphics :: Editors :: Vector-Based",
+    "Topic :: Software Development :: Documentation",
+]
+
+include = ["gaphor/locale/*/LC_MESSAGES/*"]
+exclude = ["**/tests", "gaphor/conftest.py" ]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pycairo = "^1.18"
+PyGObject = "^3.30"
+gaphas = "^3.1.0"
+generic = "^1.0.0"
+tinycss2 = "^1.0.2"
+pyinstaller = { version = ">=4.6,<6.0", python = "^3.9, <3.11", optional = true }
+pyinstaller-versionfile = { version = "^2.0.0", optional = true }
+poethepoet = { version = ">=0.10,<0.17", optional = true }
+tomli = { version = ">=1.1.0", python = "<3.11", optional = true }
+sphinx = { version = ">=4.3,<6.0", optional = true }
+sphinx-rtd-theme = { version = "^1.0", optional = true }
+sphinx-copybutton = { version= "^0.5.0", optional = true }
+myst-parser = { version = ">=0.15,<0.19", optional = true }
+jedi = "^0.18.1"
+darkdetect = ">=0.5.1,<0.8.0"
+better-exceptions = "^0.3.3"
+
+[tool.poetry.dev-dependencies]
+tomli = ">=1.2,<3.0"
+pytest = "^7.1"
+pytest-cov = "^3.0"
+pytest-mock = "^3.8.2"
+xdoctest = "^1.0.2"
+black = "^22.6"
+mypy = "0.971"
+pre-commit = "^2.20"
+sphinx = ">=4.3,<6.0"
+babel = "^2.10.3"
+babelgladeextractor = "^0.7"
+flake8 = "^5.0"
+isort = "^5.10"
+poethepoet = ">=0.10,<0.17"
+hypothesis = "^6.54.3"
+
+[tool.poetry.extras]
+pyinstall = ["poethepoet", "pyinstaller", "pyinstaller-versionfile", "tomli"]
+docs = [ "sphinx", "sphinx-rtd-theme", "sphinx-copybutton", "myst-parser"]
+
+[tool.poetry.scripts]
+gaphor = "gaphor.ui:main"
+gaphorconvert = "gaphor.plugins.diagramexport.gaphorconvert:main"
+
+[tool.poe.tasks]
+test = "pytest"
+test-all = "pytest --cov=gaphor/"
+coremodel.script = """gaphor.codegen.coder:main(
+    modelfile='models/Core.gaphor',
+    overridesfile='models/Core.override',
+    outfile='gaphor/core/modeling/coremodel.py'
+    )"""
+uml.script = """gaphor.codegen.coder:main(
+    modelfile='models/UML.gaphor',
+    overridesfile='models/UML.override',
+    outfile='gaphor/UML/uml.py',
+    supermodelfiles=[('Core', 'models/Core.gaphor')]
+    )"""
+sysml.script = """gaphor.codegen.coder:main(
+    modelfile='models/SysML.gaphor',
+    outfile='gaphor/SysML/sysml.py',
+    supermodelfiles=[
+        ('Core', 'models/Core.gaphor'),
+        ('UML', 'models/UML.gaphor')]
+    )"""
+raaml.script = """gaphor.codegen.coder:main(
+    modelfile='models/RAAML.gaphor',
+    outfile='gaphor/RAAML/raaml.py',
+    supermodelfiles=[
+        ('Core', 'models/Core.gaphor'),
+        ('UML', 'models/UML.gaphor'),
+        ('SysML', 'models/SysML.gaphor')]
+    )"""
+c4model.script = """gaphor.codegen.coder:main(
+    modelfile='models/C4Model.gaphor',
+    outfile='gaphor/C4Model/c4model.py',
+    supermodelfiles=[('UML', 'models/UML.gaphor')]
+    )"""
+lint = "pre-commit run --all-files"
+docs = "sphinx-build docs docs/_build/html"
+clean = { "shell" = "rm -rf dist build _packaging/dist _packaging/build _packaging/windows/file_version_info.txt _packaging/gaphor-script.py docs/_build" }
+_gaphor-script = { "script" = "_packaging.make-script:make_gaphor_script" }
+_version-file = { "script" = "_packaging.make-script:make_file_version_info" }
+_pyinstaller = { "cwd" = "_packaging", shell = "pyinstaller -y gaphor.spec"}
+package = ["_gaphor-script", "_version-file", "_pyinstaller"]
+win-installer = { "script" = "_packaging.windows.build-win-installer:main" }
+appimage-docker-build = "docker build -t ghcr.io/gaphor/gaphor-appimage _packaging/appimage"
+appimage-docker-build-clean = "docker build --no-cache -t ghcr.io/gaphor/gaphor-appimage _packaging/appimage"
+appimage-docker-push = "docker push ghcr.io/gaphor/gaphor-appimage:latest"
+appimage-docker-run = "docker run --rm -it --volume $PWD:/gaphor ghcr.io/gaphor/gaphor-appimage"
+gettext-pot = "pybabel extract -o po/gaphor.pot -F po/babel.ini gaphor"
+gettext-po = { "script" = "po.build-babel:update_po_files" }
+gettext-mo = { "script" = "po.build-babel:compile_mo_files" }
+translations = ["gettext-pot", "gettext-po", "gettext-mo"]
+icons = { "shell" = "make -C gaphor/ui/icons" }
+
+[tool.poe.executor]
+type = "virtualenv"
+
+[tool.poetry.plugins."gaphor.appservices"]
+"event_manager" = "gaphor.core.eventmanager:EventManager"
+"app_file_manager" = "gaphor.ui.appfilemanager:AppFileManager"
+"styling" = "gaphor.ui.styling:Styling"
+"greeter" = "gaphor.ui.greeter:Greeter"
+"self_test" = "gaphor.ui.selftest:SelfTest"
+"error_reports" = "gaphor.plugins.errorreports:ErrorReports"
+
+[tool.poetry.plugins."gaphor.services"]
+"component_registry" = "gaphor.services.componentregistry:ComponentRegistry"
+"event_manager" = "gaphor.core.eventmanager:EventManager"
+"properties" = "gaphor.services.properties:Properties"
+"undo_manager" = "gaphor.services.undomanager:UndoManager"
+"element_factory" = "gaphor.core.modeling:ElementFactory"
+"element_dispatcher" = "gaphor.core.modeling.elementdispatcher:ElementDispatcher"
+"modeling_language" = "gaphor.services.modelinglanguage:ModelingLanguageService"
+"file_manager" = "gaphor.ui.filemanager:FileManager"
+"recent_files" = "gaphor.ui.recentfiles:RecentFiles"
+"main_window" = "gaphor.ui.mainwindow:MainWindow"
+"export_menu" = "gaphor.ui.menufragment:MenuFragment"
+"tools_menu" = "gaphor.ui.menufragment:MenuFragment"
+"copy" = "gaphor.services.copyservice:CopyService"
+"sanitizer" = "gaphor.UML.sanitizerservice:SanitizerService"
+"tree_component" = "gaphor.ui.tree:TreeComponent"
+"toolbox" = "gaphor.ui.toolbox:Toolbox"
+"diagrams" = "gaphor.ui.diagrams:Diagrams"
+"consolewindow" = "gaphor.plugins.console.consolewindow:ConsoleWindow"
+"elementeditor" = "gaphor.ui.elementeditor:ElementEditor"
+"diagram_export" = "gaphor.plugins.diagramexport:DiagramExport"
+"xmi_export" = "gaphor.plugins.xmiexport:XMIExport"
+"help" = "gaphor.services.helpservice:HelpService"
+
+[tool.poetry.plugins."gaphor.modelinglanguages"]
+"Core" = "gaphor.core.modeling.modelinglanguage:CoreModelingLanguage"
+"UML" = "gaphor.UML.modelinglanguage:UMLModelingLanguage"
+"SysML" = "gaphor.SysML.modelinglanguage:SysMLModelingLanguage"
+"C4Model" = "gaphor.C4Model.modelinglanguage:C4ModelLanguage"
+"RAAML" = "gaphor.RAAML.modelinglanguage:RAAMLModelingLanguage"
+
+[tool.poetry.plugins."babel.extractors"]
+"gaphor" = "gaphor.babel:extract_gaphor"
+
+[tool.pytest.ini_options]
+testpaths = [
+    "gaphor",
+    "tests",
+    "docs",
+]
+python_files = "test_*.py"
+
+# for coverage: --cov=gaphor/
+addopts = "--xdoctest"
+
+junit_family = "xunit1"
+markers = "slow: marks tests as slow (deselect with '-m \"not slow\"')"
+
+[tool.coverage.run]
+omit = [
+    "*tests*",
+    "gaphor/ui/uipreview.py"
+]
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 88
+known_third_party = ["cairo", "gaphas", "generic", "gi", "pytest", "tinycss2", "tomli"]
+skip = "flatpak,.venv,build,dist"
+skip_glob = "gaphor/diagram/general/__init__.py,gaphor/UML/__init__.py,gaphor/UML/*/__init__.py,gaphor/RAAML/stpa/__init__.py"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,46 @@
+@import url("styling.css");
+
+.greeter flowboxchild:hover {
+  -gtk-icon-filter: brightness(1.2);
+}
+
+box.propertypage > * {
+  margin-top: 6px;
+}
+
+expander-widget.propertypage {
+  margin-top: 12px;
+}
+
+.propertypage box.horizontal:not(.linked) {
+  border-spacing: 6px;
+}
+
+.propertypage .title {
+  font-weight: bold;
+}
+
+.propertypage .info {
+  margin: 3px 2px 0 2px;
+}
+
+frame > textview {
+  padding: 6px;
+}
+
+.info-popover {
+  margin: 6px;
+}
+
+#tree_component .editing {
+  background-color: @theme_bg_color;
+  color: @theme_fg_color;
+}
+
+#tree_component .editing selection {
+  background-color: alpha(@theme_selected_bg_color, 0.3);
+}
+
+#tree_component .move-element-above {
+  border-top: 12px solid lighter(@insensitive_fg_color);
+}

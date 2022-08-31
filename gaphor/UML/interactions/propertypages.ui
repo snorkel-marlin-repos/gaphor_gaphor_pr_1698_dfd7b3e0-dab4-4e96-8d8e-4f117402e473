@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+
+  <object class="GtkBox" id="message-editor">
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkLabel">
+        <property name="label" translatable="yes">Message Sort</property>
+        <property name="xalign">0</property>
+        <style>
+          <class name="title"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkComboBox" id="message-combo">
+        <signal name="changed" handler="message-combo-changed" swapped="no"/>
+        <child>
+          <object class="GtkCellRendererText"/>
+          <attributes>
+            <attribute name="text">0</attribute>
+          </attributes>
+        </child>
+      </object>
+    </child>
+    <style>
+      <class name="propertypage"/>
+    </style>
+  </object>
+
+</interface>

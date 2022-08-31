@@ -1,0 +1,597 @@
+2.12.0
+------
+
+- GTK4 is now the default for Flatpak; Windows, macOS, and AppImage still use GTK3
+- Save folder is remembered across save actions
+- State machine functionality has been expanded, including support for regions
+- Resize of partition keeps actions in the same swimlane
+- Activities (behaviors) can be assigned to classifiers
+- Stereotypes can be inherited from other stereotypes
+- Many GTK4 fixes: rename, search, instant editors
+
+2.11.0
+------
+- Add Copy/Paste for GTK4
+- Make dialogs work with GTK4
+- Fix instant editors for GTK4
+- Update list view for GTK4
+- Make SysML Enumerations also ValueTypes
+- Add union types
+- Let Gaphor check for its own health
+- Add error reports window
+- Add element to diagram by double click
+- Ensure all models are saved with UTF-8 encoding
+- Fix states can't transition to themselves
+- Fix unlinking elements from the model
+- Fix issue with fully pasting a diagram
+- Fix scroll speed for touch screens
+- Fix codeql warnings and error
+- Improve text placement for Associations
+- Enable additional pre-commit hooks
+- Add example in docs of color for comments using CSS
+- Hungarian translation updates
+
+2.10.0
+------
+- Pin support for activity diagram
+- Add Activity item to diagram
+- Allow to drag and drop all elements from tree view to diagram
+- Codegen use all defined modeling languages
+- Fix diagram dependency cycle
+- Add Skip Duplicate Action and Release-Drafter Permissions
+- Update permissions for CodeQL GitHub Action
+- Include all diagram items in test model
+- Fix GTK4 property page layouts
+- Use official RAAML logo in greeter
+- Relation metadata to allow better reuse
+- Rename relationship connector base classes
+- Add design principles to docs
+- French, Finnish, Croatian translation update
+
+2.9.2
+-----
+- Fix Windows build
+
+2.9.1
+-----
+- Fix bad release of version 2.9.0
+- Cleanup try except blocks and add more f-strings
+
+2.9.0
+-----
+- Separate Control and Object Flow
+- Automatically select dark mode for macOS and Windows
+- Automatically Enable Rename Prompt for Newly Created Diagrams
+- New group function for element grouping
+- Simulate user behavior with Hypothesis and fix uncovered bugs
+- Proxyport: update ports when proxyport is moved
+- Fix AppImage Crashes on Save Command
+- Improve reconnect for relationships
+- Update connection behavior for Association
+- Enable preferences shortcut
+- Rename Component Toolbox to Deployment
+- Update Finnish, Spanish, Croation, and German translatio
+
+2.8.2
+-----
+- Fix splitting of lines
+- Update README to reflect new functionality
+- Add additional strings to translations
+- Update Hungarian, Spanish, and Finnish translations
+
+2.8.1
+-----
+- Fix Gaphor fails to load when launched in German
+- Simplify the greeter dialogs
+- Update Hungarian, Finnish, and Chinese (Simplified) translations
+
+2.8.0
+-----
+- Add diagram type support
+- Improve the welcoming experience with a greeter window and starting templates
+- Add a Magnet-tool
+- Support SysML Item flow
+- Stereotypes for ItemFlow properties
+- Full Copy/Paste of model elements
+- Allow for deleting elements in the tree view
+- Allocation of structural types to swimlane partitions
+- User notification when model elements are automatically removed
+- Store toolbox settings per modeling language
+- Grow item when an item is dropped on it
+- Add "values" compartment to Block item and set a minimal height for compartments
+- Support empty square bracket notation in an Operation
+- New code generator
+- Fix AppImage GLIBC Error on Older Distro Versions
+- Fix Sequence diagram loading when message is close to lifeline body
+- Support for loading .gaphor files directly from the macOS Finder
+- Fix positions of nested items during undo
+- Fix ownership of Connector, ProxyPort, and ItemFlow
+- Improve GTK4 compatibility
+- Improve clarity of syntax for attributes and operations using a popover
+- Clean up Toolbox and remove some legacy code
+- Invert association creation
+- Ensure model consistency on save and fork node loading fixes
+- Core as a separate ModelingLanguage
+- Use symbolic close icon for notebook tabs
+- Update to latest gvsbuild, switch to wingtk repo
+- Spanish, Hungarian, Finnish, Dutch, Portuguese, Croation, Espanian, and Galician translations updates
+- Add Chinese (Simplified) translation
+
+2.7.1
+_____
+- Fix lines don't disconnect when moved
+- No GTK required anymore for generating docs
+- Update Python to 3.10.0
+- Spanish translation updates
+
+2.7.0
+-----
+- Add Reflexive Message item for Interactions
+- Allow messages to move freely on Lifeline and ExecutionSpec
+- Pop-up element name editor on creation of a new element
+- Add option to show underlying DecisionNode type
+- Add InformationFlow for Connectors
+- Swap relationship direction for Generalization, Dependency, Import, Include, and Extend
+- Use Jedi for autocomplete in the Python Console
+- Sphinx directive for embedding Gaphor models into docs
+- Fix lifeline ordering when not all items are linked in a diagram
+- Allow generalizations to be reused
+- Allow auto-generated elements (Activity, State Machine, Interaction, Region) to be removed
+- Fix Windows build by updating to Python 3.9.9
+- Emit events for Diagram.ownedPresentation and Presentation.diagram after element creation
+- Show underlaying DecisionNode type
+- Add documentation dependencies to pyproject.toml
+- Move enumeration layout to UML.classes
+- Rename packaging to _packaging
+- Remove names for initial/final nodes
+- Update to latest gvsbuild
+- Update to PyInstaller 4.6
+- Add gtksourceview to Windows docs
+- Fix Python 3.10 warnings
+- Fix indention in Style Sheet docs
+- Expand the number of strings translated
+- Hungarian, Spanish, Japanese, Finnish, and Croatian translation updates
+
+2.6.5
+-----
+- Update style sheet editor to be a code editor
+- Update strings to improve ability to translate
+- Ensure all relationships are brought to top
+- Fix errors in Italian translation which prevented model saving
+- Add association end properties to editor pane
+- Restore rename right click option to diagrams in tree view
+- Add Japanese translation
+- Update Hungarian, Croatian, and Spanish translations
+
+2.6.4
+-----
+- Fix Flatpak build failure by reverting to previous dependencies
+
+2.6.3
+-----
+- Fix about dialog logo
+- Add translation of more elements
+- Remove importlib_metadata dependency
+- Simpler services for about dialog
+- Up typing compliance to 3.9, and remove typing_extensions
+- Finnish translation updates
+
+2.6.2
+-----
+ - Fix localization of UI files
+ - Fix icons in dark mode
+ - Update Spanish, Finnish, Hugarian, and Portugues (Br) translations
+
+2.6.1
+-----
+ - Display guard conditions in square brackets
+ - Use flat buttons in the header bar
+ - Fix translation support
+ - Fix drag and drop of elements does not work on diagrams
+ - Fix parameter is incorrect error with ";;" in path
+ - Fix fork/join node incorrectly rotates
+ - Fix close button on about dialog doesn't work in Windows
+ - Fix wrong label is displayed when object node ordering is enabled
+ - Improve inline editor undo/redo behavior
+ - Fixed closing of about dialog
+ - Add VSCode debug instructions for Windows
+ - Rename usage of Partitions to Swimlanes
+ - Update Dutch and Hungarian Translations
+ - Croatian translation updates
+ - Simplify attribute and enumeration lookup
+
+2.6.0
+-----
+- Improve zoom and pan for mouse
+- Add Finnish, Galician, Hungarian, and Korean, update Spanish translations
+- Fix disappearing elements from tree view on Windows
+- Convert CI from mingw to gvsbuild
+- Upgrade Windows Build Script from Bash to Python
+- Refactor GitHub Actions to use composite actions
+- Add translations for UI files
+- Add information flows to UML model
+- Add extra rules to avoid cyclic references
+- Fix typo in UML.gaphor
+- Refactor class property pages in to multiple modules
+- Fix Windows and other developer documentation updates
+- Enable pyupgrade
+- Update the README for Flatpak string translation
+- Fix documentation build errors, update dependencies
+
+2.5.1
+-----
+- Fix app release signing in Windows and macOS
+
+2.5.0
+-----
+- Add initial support for STPA in RAAML
+- Add support for notes in property pages and attributes
+- Allow for diagrams to be nested under all elements
+- Fix delete and undo of a diagram
+- Rename C4ContainerDatabaseItem to C4DatabaseItem
+- Cleanup model loading
+- Change diagram item management to the element factory
+- Organize and simplify element events
+- Cleanup toolbox and diagram action code
+
+2.4.2
+-----
+- Fix AttributeError when creating composite associations
+- Add tooltips for A and S in attribute editor
+- Improve drag and drop for TreeView
+- Started to add support for GTK4
+- Upload Linux assets during release automatically
+- Sign only builds on the master branch
+
+2.4.1
+-----
+- Fix reordering attributes and operations with drag and drop
+
+2.4.0
+-----
+- Add support for DataType, ValueType, Primitive, and Enumeration
+- Model state is stored per model, restores where you left off
+- Add support for Containment Relationship
+- Focus already opened model when opening a model file
+- Remove the New From Template option
+- Upgrade toolbox to be compatible with GTK 4
+- Add regression tests
+- Fix build fails when GitHub Actions secrets are not available
+- Fix association direction arrow is not updated
+
+2.3.2
+_____
+- Fix issue where ornaments were not show on associations
+  after loading a model
+
+2.3.1
+_____
+- Fix scrollbars cause the diagram to disappear
+- Update Italian translation
+- Left align the toolbox header labels
+
+2.3.0
+_____
+- Add support for C4 model
+- Add support for Fault Tree Analysis with RAAML
+- Update the UML data model to align closer to version 2.5.1
+- Enable arrow keys to expand and collapse namespace tree
+- Allow Gaphor profiles to be copy and pasted between models
+- Improve diagram drawing and scrolling speed
+- Add Croatian translation
+- Remove gray borders around editable text
+- Complete converting all tests to pytest
+- Fix guides are misaligned when top-left handle is moved
+- Update development environment instructions
+- Fix undo and redo does not set attributes
+- Fix selection lasso is in the wrong place after scrolling
+
+
+2.2.2
+_____
+- Fix undo of deleted elements
+- Fix requirements are missing ID and text
+- Add CSS styling to dropzone and grayed out elements
+- Start to remove use of inline styles
+
+2.2.1
+-----
+- Fix drawing of composite association
+
+2.2.0
+-----
+- Guide users to create valid relationships
+- macOS builds are signed and notarized
+- New app icon
+- Improvements to copy and paste, and undo robustness
+- Fix RuntimeError caused by style sheet creation
+- Use EventControllers from GTK 3.24
+
+2.1.1
+-----
+- Fix copy and paste in Linux with Wayland
+
+2.1.0
+-----
+- Improve swimlane behavior
+- Add auto select in tree view
+- Add in-app notifications
+- Improve file load and save dialogs
+- Show more elements and relationships in namespace tree
+- Update Italian translation
+- Make lifelines and messages owned by interactions
+
+2.0.1
+-----
+- Fix Gaphor fails to launch in macOS
+- Use certificate to sign Windows binaries
+- Fix copy/paste issue that causes association ends to be removed
+- Improve editing for inline editors (popovers)
+- Fix undo on diagram items corrupts the model
+- Fix UML composite and shared association tools
+
+2.0.0
+-----
+- Add initial support for SysML
+- Add support for styling using CSS
+- Translate to Italian
+- Improve dmg for macOS
+- Improve Copy/Paste for nested items
+- Add new modeling language service
+- Show the element editor by default
+- Create completely new data model code generator
+- Add part and shared associations to tool palette
+- Remove unused imports, enable flake8 checks
+- Update App icons
+- Update animation gif in README
+- Fix Windows Build Errors caused by Missing ZST Archives
+- Fix installation on Windows
+- Add extra diagram item tests
+- Fix macOS Python version problem
+- Place UML model and diagram items closer together
+- Refactor Code Generator to New Module and add CLI
+- Fix MSYS2 package names and disable system update
+- Remove CI workaround for console plugin
+- Move core modeling concepts to a separate package
+- Convert Some Profile Tests to Pytest
+- Speed up text rendering
+- Fix tree view text to allow names with angle brackets
+- Clear the clipboard when diagram items are copied
+- Fix name change for activity partitions
+
+1.2.0
+-----
+- Improved support for Sequence Diagrams
+- Support multiple windows
+- Proper file icons on Mac and Linux
+- No longer a console on Windows
+- Support i18n
+- Improved search in tree view
+- "Show in Diagram" option in tree view popup menu
+- Internally, the Gaphor application is no longer a singleton
+- Overall a lot of code simplification
+- A fair share of bug fixes
+
+1.1.1
+-----
+- Reset tool after creation by default
+- Remove setup.py and MANIFEST.in
+
+1.1.0
+-----
+- New menu structure, according to the GNOME HIG
+- Dark theme support
+- Convert docs to Markdown
+- Convert strings in to f-string format
+- Change Windows packaging to use PyInstaller
+- The Element Editor is now part of the main window
+- New render mechanism for diagram items
+- Code is (partly) statically checked by Mypy
+- Many, many bug fixes
+
+1.0.2
+-----
+- Remove dependency on zope.component and zope.interface libraries
+- Fix crash when running Gaphor with Wayland on Linux
+- Improved font rendering in macOS
+- Fix exceptions when renaming, deleting, or creating a package or diagram
+- Disable drag and drop from the selection tool
+- Fix many GTK deprecation warnings
+- Convert most tests to Pytest
+
+1.0.1
+-----
+- Restore the alignment plugin
+- Fix corruption of Namespace during undo
+- Start the app as a Gtk.Application
+- Combine the UIManager service into the ActionManager
+- Fix Flatpak packages
+- Refactor the UML module to make it more atomic
+
+1.0.0
+-----
+- Port to Python 3
+- Port from GTK+ 2 and PyGTK to GTK+ 3 with PyGObject
+- Drop use of etk.docking
+- Overhaul the README
+- Add contributing guide and code of conduct
+- Adopt Black as code formatter
+- Add CI/CD for Windows, macOS, Linux with Azure-Pipelines and ReadTheDocs
+
+0.17.2
+------
+- Improved Python3 compatibility
+
+0.17.1
+------
+- Added Russian translation
+- Pango is used for text rendering, instead of the Cairo toy-api (seriously,
+  that's what the docs say)
+- Small code improvements
+
+0.17
+----
+- New Docking widget layout
+- Improved componentized services
+- UIComponent rewrite (due to new interface)
+- ValueSpecification and subclasses are now treated as attribute. This
+  saves a lot of object construction and Java-ish headaches.
+
+0.16.0
+------
+- Guides support from Gaphas 0.7.0
+- "hand written" drawing style
+- Keyboard shortcuts for toolbox selection
+- Fixed issue in undo transaction handling
+- Proper dialog when exiting with changed model
+
+0.15.0
+------
+- Fixed bugs related to diagrams loading.
+- Subsystem item is added (part of components).
+- Partition item, known as swimlanes, is added (part of actions).
+- Node item can group other nodes, artifacts and components.
+- Stereotype names shown in stereotype attribute compartments are centered.
+- Stereotype creating and applying is simplified.
+- Association ends stereotype editing is supported.
+- State item supports entry, exit and do activities.
+
+0.14.0
+------
+- Reintroduced assembly connections.
+- Stereotypes can have attributes.
+- Major speed improvements due to new notification system.
+
+0.13.1
+------
+- added desktop file and gaphor icons
+- update to gaphas 0.4
+
+0.13.0
+------
+- Transition to zope events completed.
+- state machines
+
+For a complete set of changes and fixes see:
+  http://gaphor.devjavu.com/query?milestone=Gaphor+0.13.0
+
+0.12.0
+------
+- undo/redo fixes
+- allow to create packages in model tree
+- improved messages on communication diagrams
+- improved text align algorithms
+- tagged values can be reordered and removed (like class attributes and
+  operations)
+- text entry used to on-diagram editing is much nicer, now
+
+0.11.2
+------
+- improved items's connection adapters
+- fixed comment line, comment, message and lifeline items connection
+  adapters to implement UML specification more closely
+- items gluing speedup
+- property page is updated when association or other diagram line connects
+  to appropriate diagram items
+- removing and reordering of class' attributes and operations is possible
+  again
+- association name and multiplicity editing improvements
+
+0.11.1
+------
+- support gaphas 0.3.0 API
+- bugfixes
+
+0.11.0
+------
+- Sequence diagrams
+- Non-UML drawing primitives (rectangles, ellipses, lines).
+- Major performance improvements in Gaphas 0.2.0.
+- Property editor
+- Lots of user interface tweaks
+- Services are loaded through Egg entry points.
+- New plugin infrastructure, based on setuptools.
+- gtk.UIManager is now used for menus.
+
+0.10.0
+------
+- New undo management system
+- Setuptools is used for installation and also within Gaphor
+- Depends on zope.component 3.4 and gaphas 0.1.3 (installed on as-needed basis)
+- Installable as Python Egg
+
+0.9.0
+-----
+- New pure-python canvas implementation (gaphas)
+- Zope Adapters used for item connections
+- Undo managements temporarily disabled
+- Added loads of unit tests
+
+NOTE: if you have Zope 3 installed it's probably not a good idea to install
+      Gaphor too, since Gaphor tries to install Zope3 packages too.
+      Don't worry, you can run Gaphor perfectly well using the run-gaphor.sh
+      script.
+
+0.8.1
+-----
+- support for automatic realization dependencies between components and
+  interfaces
+- provided and required interfaces of component realizing classifiers are
+  visible in Component.{provided,required} derived associations
+- missing icons added
+
+0.8.0
+-----
+- actions: flow final, fork, join and object nodes
+- assembly connector
+- flows and also initial, flow final and activity final nodes can have names
+- flows can be split and merged using activity edge connectors
+- object inspector panel added
+- pdf file export
+- gaphorconvert utility, which allows easy batch conversion of diagrams
+  into svg or pdf files
+- user interface fixes
+- require gtk+ 2.8.x
+
+0.7.1
+-----
+- Real UML2 associations;
+- Stereotypes;
+- Atrifact and Node types;
+- Settings of open and closed toolboxes as well as the window size are saved;
+- Diagrams are shown in bold in the tree view, abstract classes are italic;
+- Added recent files option;
+- Keyboard shortcuts can be configured at runtime.
+- Spanish translation
+- Python2.4 fixes
+
+0.7.0
+-----
+- XMI export plugin
+- Item alignment
+- Full featured undo mechanism
+- Copy/paste
+- usability improvements
+- require DiaCanvas2 0.14.2
+
+0.6.0
+-----
+- Enhanced Plugin support
+- Interfaces
+- Support for Stereotypes
+
+0.5.0
+-----
+- Support for UseCases
+- Plugins
+- Packages can be reordered
+- Interfaces
+
+0.4.0
+-----
+- Support for Actions
+- Support for Components
+
+0.3.0
+-----
+- New and improved interface
