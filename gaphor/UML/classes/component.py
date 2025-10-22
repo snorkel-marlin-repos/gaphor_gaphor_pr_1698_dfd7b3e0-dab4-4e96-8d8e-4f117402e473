@@ -2,7 +2,7 @@
 
 from gaphor import UML
 from gaphor.core.modeling.properties import attribute
-from gaphor.core.styling import FontWeight, JustifyContent
+from gaphor.core.styling import FontWeight, VerticalAlign
 from gaphor.diagram.presentation import Classified, ElementPresentation
 from gaphor.diagram.shapes import Box, Text, cairo_state, draw_border
 from gaphor.diagram.support import represents
@@ -22,7 +22,6 @@ class ComponentItem(Classified, ElementPresentation):
         self.watch("subject.appliedStereotype.slot.definingFeature.name")
         self.watch("subject.appliedStereotype.slot.value", self.update_shapes)
         self.watch("subject[Classifier].useCase", self.update_shapes)
-        self.watch("children", self.update_shapes)
 
     show_stereotypes: attribute[int] = attribute("show_stereotypes", int)
 
@@ -36,17 +35,14 @@ class ComponentItem(Classified, ElementPresentation):
                     text=lambda: self.subject.name or "",
                     style={"font-weight": FontWeight.BOLD},
                 ),
-                style={
-                    "padding": (4, 32, 4, 4),
-                    "justify-content": JustifyContent.START,
-                },
+                style={"padding": (4, 32, 4, 4)},
                 draw=draw_component_icon,
             ),
             *(self.show_stereotypes and stereotype_compartments(self.subject) or []),
             style={
-                "justify-content": JustifyContent.START
+                "vertical-align": VerticalAlign.TOP
                 if self.diagram and self.children
-                else JustifyContent.CENTER,
+                else VerticalAlign.MIDDLE,
             },
             draw=draw_border
         )

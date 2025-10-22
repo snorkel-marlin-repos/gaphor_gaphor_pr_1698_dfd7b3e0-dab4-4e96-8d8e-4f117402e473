@@ -3,7 +3,7 @@ import logging
 from gaphor import UML
 from gaphor.core import gettext
 from gaphor.core.modeling.properties import attribute
-from gaphor.core.styling import FontStyle, FontWeight, JustifyContent, TextAlign
+from gaphor.core.styling import FontStyle, FontWeight, TextAlign, VerticalAlign
 from gaphor.diagram.presentation import (
     Classified,
     ElementPresentation,
@@ -112,7 +112,7 @@ class EnumerationItem(Classified, ElementPresentation[UML.Enumeration]):
             ),
             *(self.show_stereotypes and stereotype_compartments(self.subject) or []),
             style={
-                "justify-content": JustifyContent.START,
+                "vertical-align": VerticalAlign.TOP,
             },
             draw=draw_border,
         )
@@ -132,10 +132,6 @@ def enumerations_compartment(subject):
             )
             for literal in subject.ownedLiteral
         ),
-        style={
-            "padding": (4, 4, 4, 4),
-            "min-height": 8,
-            "justify-content": JustifyContent.START,
-        },
+        style={"padding": (4, 4, 4, 4), "min-height": 8},
         draw=draw_top_separator,
     )
