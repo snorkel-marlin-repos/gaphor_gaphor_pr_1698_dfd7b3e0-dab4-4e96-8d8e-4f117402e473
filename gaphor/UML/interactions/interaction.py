@@ -1,7 +1,7 @@
 """Interaction diagram item."""
 
 from gaphor import UML
-from gaphor.core.styling import JustifyContent, TextAlign
+from gaphor.core.styling import TextAlign, VerticalAlign
 from gaphor.diagram.presentation import ElementPresentation, Named
 from gaphor.diagram.shapes import Box, Text, stroke
 from gaphor.diagram.support import represents
@@ -25,13 +25,10 @@ class InteractionItem(Named, ElementPresentation):
                     text=lambda: self.subject.name or "",
                     style={"text-align": TextAlign.LEFT},
                 ),
-                style={
-                    "padding": (4, 4, 4, 4),
-                    "justify-content": JustifyContent.START,
-                },
+                style={"padding": (4, 4, 4, 4)},
             ),
             style={
-                "justify-content": JustifyContent.START,
+                "vertical-align": VerticalAlign.TOP,
             },
             draw=draw_interaction,
         )

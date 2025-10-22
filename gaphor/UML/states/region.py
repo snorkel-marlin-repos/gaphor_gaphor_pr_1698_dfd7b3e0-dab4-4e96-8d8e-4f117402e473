@@ -1,4 +1,4 @@
-from gaphor.core.styling import JustifyContent, TextAlign
+from gaphor.core.styling import TextAlign, VerticalAlign
 from gaphor.diagram.shapes import BoundedBox, Text, draw_top_separator
 
 
@@ -19,7 +19,7 @@ def _create_region_compartment(region, index):
         style={
             "padding": (4, 4, 4, 4),
             "min-height": 100,
-            "justify-content": JustifyContent.START,
+            "vertical-align": VerticalAlign.TOP,
             "dash-style": (7, 3) if index > 0 else (),
         },
         draw=draw_top_separator,

@@ -7,9 +7,9 @@ from gaphor.core.modeling.properties import attribute
 from gaphor.core.styling import (
     FontStyle,
     FontWeight,
-    JustifyContent,
     TextAlign,
     TextDecoration,
+    VerticalAlign,
 )
 from gaphor.diagram.presentation import (
     Classified,
@@ -99,7 +99,7 @@ class ClassItem(Classified, ElementPresentation[UML.Class]):
             ),
             *(self.show_stereotypes and stereotype_compartments(self.subject) or []),
             style={
-                "justify-content": JustifyContent.START,
+                "vertical-align": VerticalAlign.TOP,
             },
             draw=draw_border,
         )
@@ -170,11 +170,7 @@ def attributes_compartment(subject):
             for attribute in subject.ownedAttribute
             if not attribute.association
         ),
-        style={
-            "padding": (4, 4, 4, 4),
-            "min-height": 8,
-            "justify-content": JustifyContent.START,
-        },
+        style={"padding": (4, 4, 4, 4), "min-height": 8},
         draw=draw_top_separator,
     )
 
@@ -201,10 +197,6 @@ def operations_compartment(subject):
             )
             for operation in subject.ownedOperation
         ),
-        style={
-            "padding": (4, 4, 4, 4),
-            "min-height": 8,
-            "justify-content": JustifyContent.START,
-        },
+        style={"padding": (4, 4, 4, 4), "min-height": 8},
         draw=draw_top_separator,
     )
