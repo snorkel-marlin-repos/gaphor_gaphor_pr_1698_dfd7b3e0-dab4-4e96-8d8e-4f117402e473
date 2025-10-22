@@ -72,12 +72,12 @@ jobs:
       - name: Create Source Dist and Wheel
         run: poetry build
       - name: Upload gaphor-${{ steps.setup_and_test.outputs.version }}.tar.gz
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gaphor-${{ steps.setup_and_test.outputs.version }}.tar.gz
           path: dist/gaphor-${{ steps.setup_and_test.outputs.version }}.tar.gz
       - name: Upload gaphor-${{ steps.setup_and_test.outputs.version }}-py3-none-any.whl
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gaphor-${{ steps.setup_and_test.outputs.version }}-py3-none-any.whl
           path: dist/gaphor-${{ steps.setup_and_test.outputs.version }}-py3-none-any.whl
